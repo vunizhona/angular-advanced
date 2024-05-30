@@ -1,0 +1,19 @@
+<h1>Comments</h1>
+
+<h2>Subscribed</h2>
+<p *ngFor="let comment of comments">
+  {{comment.body}}
+</p>
+
+
+<h2>Async pipe</h2>
+<div *ngIf="$comments | async as data">
+  <p *ngFor="let dataItem of data">
+    {{dataItem.body}}
+  </p>
+</div>
+
+
+<h2>Error</h2>
+
+<div *ngIf="error">{{error}}</div>
