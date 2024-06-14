@@ -16,8 +16,7 @@ export interface CommentI {
   providedIn: 'root'
 })
 export class CommentsService {
-  latestComment = new Subject<string>()
-  storedComment = new BehaviorSubject<string>('Initial value')
+  latestComment = new BehaviorSubject<string>('')
 
   constructor(public http: HttpClient) { }
 

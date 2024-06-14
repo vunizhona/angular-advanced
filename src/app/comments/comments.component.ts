@@ -2,6 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {CommentI, CommentsService} from "../comments.service";
 import { from, map, Observable, Subscription, tap} from "rxjs";
 import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
+import {ErrorBlockComponent} from "../shared/error-block/error-block.component";
 
 @Component({
   selector: 'app-comments',
@@ -9,7 +10,8 @@ import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
   imports: [
     NgForOf,
     AsyncPipe,
-    NgIf
+    NgIf,
+    ErrorBlockComponent
   ],
   templateUrl: './comments.component.html',
   styleUrl: './comments.component.css'
@@ -19,7 +21,6 @@ export class CommentsComponent implements OnDestroy, OnInit{
   public mySubscription: Subscription;
   public $comments: Observable<CommentI[]>
   public error: string | undefined;
-  public numbers = [1,2,3,4,5]
 
   constructor(public commentsService: CommentsService) {
 
@@ -29,27 +30,19 @@ export class CommentsComponent implements OnDestroy, OnInit{
     )
       .subscribe(comments => {
         this.comments = comments;
-        this.commentsService.storedComment.next(this.comments[0].body)
         this.commentsService.latestComment.next(this.comments[0].body)
       })
 
     this.$comments = this.commentsService.getAllComments().pipe(map(items => items.slice(1, 10)))
 
-    this.commentsService.getComment().subscribe(() => console.log('success'), (error) => this.error = error.message)
+    this.commentsService.getComment().subscribe({next: (next) => {console.log('success')}, error: error => {this.error = error.message}})
   }
 
   ngOnInit() {
-    const $numbers: Observable<number> = from(this.numbers);
+  }
 
-    $numbers.subscribe({
-      next: value => console.log("Found value", value),
-      error: error => console.log('Error')
-    })
-
-    this.commentsService.storedComment.subscribe(item => console.log(item, 'behaviour item'))
-    this.commentsService.latestComment.subscribe(item => console.log(item, 'subject item'))
-    this.commentsService.storedComment.next('new value')
-    this.commentsService.latestComment.next('new value')
+  trackByAsyncData(index: number, item: CommentI): number{
+    return item.id
   }
 
   ngOnDestroy(): void {
